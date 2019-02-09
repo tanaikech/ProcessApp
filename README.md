@@ -111,6 +111,8 @@ For example, when 2 functions of ``myFunction1()`` and ``myFunction2()`` are run
 }
 ~~~
 
+[Also this method was posted to Stackoverflow as an answer.](https://stackoverflow.com/a/54604118)
+
 <a name="getdevurl"></a>
 ## 2. getDevUrl()
 ### Overview

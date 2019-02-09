@@ -1,4 +1,5 @@
 /**
+ * GitHub  https://github.com/tanaikech/ProcessApp<br>
  * Retrieve total execution time of time-driven trigger.<br>
  * @param {Object} object Object
  * @return {Object} Total execution time of time-driven trigger

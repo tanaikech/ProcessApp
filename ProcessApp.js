@@ -24,6 +24,15 @@ function getDevUrl(projectId) {
 function getRunningFunctions() {
     return new ProcessApp(1).GetRunningFunctions();
 }
+
+/**
+ * Retrieve total execution time of the specific process type.<br>
+ * @param {Object} object Object
+ * @return {Object} Total execution time of the specific process type
+ */
+function getExecutionTimeOfProcessType(object) {
+    return new ProcessApp(1).GetExecutionTimeOfProcessType(object);
+}
 ;
 (function(r) {
   var ProcessApp;
@@ -121,6 +130,46 @@ function getRunningFunctions() {
         r = UrlFetchApp.fetch(endpoint, params);
         r = JSON.parse(r.getContentText());
         return r.processes || [];
+      } catch (error) {
+        e = error;
+        throw new Error(e);
+      }
+    };
+
+    ProcessApp.prototype.GetExecutionTimeOfProcessType = function(p_) {
+      var data, e, endTime, endpoint, nextPageToken, params, q, ref, startTime;
+      try {
+        if (p_ == null) {
+          p_ = {};
+        }
+        params = {
+          headers: {
+            Authorization: 'Bearer ' + this.at
+          }
+        };
+        ref = defaultStartEndTime.call(this, p_), startTime = ref[0], endTime = ref[1];
+        data = [];
+        nextPageToken = "";
+        while (true) {
+          q = {
+            pageToken: nextPageToken,
+            fields: "*",
+            "userProcessFilter.functionName": p_.functionName || "",
+            "userProcessFilter.scriptId": p_.projectId || "",
+            "userProcessFilter.types": p_.processType || "EDITOR",
+            "userProcessFilter.startTime": startTime,
+            "userProcessFilter.endTime": endTime
+          };
+          endpoint = addQuery.call(this, this.url, q);
+          r = UrlFetchApp.fetch(endpoint, params);
+          r = JSON.parse(r.getContentText());
+          Array.prototype.push.apply(data, r.processes);
+          nextPageToken = r.nextPageToken || "";
+          if (!nextPageToken) {
+            break;
+          }
+        }
+        return parseData.call(this, data);
       } catch (error) {
         e = error;
         throw new Error(e);

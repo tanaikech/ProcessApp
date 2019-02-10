@@ -13,6 +13,7 @@ ProcessApp
 1. [getExecutionTimeOfTrigger()](#getexecutiontimeoftrigger) : This method retrieves the total execution time of all functions executed by the time-driven trigger at owner's account. For example, you can know the total execution time of all functions executed by the time-driven trigger in 24 h.
 1. [getDevUrl()](#getdevurl) : This method retrieves the endpoint of developer mode for Web Apps like ``https://script.google.com/macros/s/#####/dev``.
 1. [getRunningFunctions()](#getrunningfunctions) : This method retrieves the functions which are running now.
+1. [getExecutionTimeOfProcessType()](#getexecutiontimeofprocesstype) : This method retrieves the total execution time of all functions by filtering the process type. For example, the total execution time of Web Apps can be retrieved.
 
 I would like to add more methods in the future.
 
@@ -162,6 +163,68 @@ The process information of the running function is returned.
 ]
 ~~~
 
+<a name="getexecutiontimeofprocesstype"></a>
+## 4. getExecutionTimeOfProcessType()
+### Overview
+This method retrieves the endpoint of developer mode for Web Apps like ``https://script.google.com/macros/s/#####/dev``.
+
+### Description
+There is the method in Class ScriptApp for retrieving the endpoint of Web Apps. It's ``ScriptApp.getService().getUrl()``. This method returns the endpoint of the deployed Web Apps like ``https://script.google.com/macros/s/#####/exec``. It's not the endpoint of developer mode like ``https://script.google.com/macros/s/#####/dev``. So I created this method of ``getDevUrl()``.
+
+### Sample script
+The basic usage is almost the same with [getExecutionTimeOfTrigger()](#getexecutiontimeoftrigger). In this method, the result is filtered by the process type. You can select the process type from [here](https://developers.google.com/apps-script/api/reference/rest/v1/processes#ProcessType)
+
+| Process type | Description |
+|:---|:---|
+| PROCESS_TYPE_UNSPECIFIED | Unspecified type. |
+| ADD_ON | The process was started from an add-on entry point. |
+| EXECUTION_API | The process was started using the Apps Script API. |
+| TIME_DRIVEN | The process was started from a time-based trigger. |
+| TRIGGER | The process was started from an event-based trigger. |
+| WEBAPP | The process was started from a web app entry point. |
+| EDITOR | The process was started using the Apps Script IDE. |
+| SIMPLE_TRIGGER | The process was started from a G Suite simple trigger. |
+| MENU | The process was started from a G Suite menu item. |
+
+This method can be used simply like below. In this case, as the default setting, the total execution time from now to 24 h ago is retrieved. And the process type of "EDITOR" is used. "EDITOR" means that the total execution time of functions executed by the script editor is retrieved.
+
+~~~javascript
+var res = ProcessApp.getExecutionTimeOfTrigger();
+~~~
+
+Of course, you can see the period for retrieving the total execution time can be set using as follows. In this sample script, the total execution time from ``2019-02-01T00:00:00.000Z`` to ``2019-02-02T00:00:00.000Z`` of a function of ``doGet`` executed by Web Apps in the project ID of ``#####`` is retrieved.
+
+~~~javascript
+var object = {
+    projectId: "#####", // Project ID
+    functionName: "doGet", // function name that you want to know the total execution time.
+    processType: "WEBAPP",
+    startTime: "2019-02-01T00:00:00.000Z",
+    endTime: "2019-02-02T00:00:00.000Z",
+};
+var res = ProcessApp.getExecutionTimeOfTrigger(object);
+~~~
+
+#### Result
+
+~~~
+{
+  "statistics": {
+    "allFunctions": [
+      "doGet",
+    ],
+    "totalExecutionTimeSec": 1200.00,
+  },
+  "eachFunction": [
+    {
+      "functionName": "doGet",
+      "totalExecutionTimeSec": 1200.00,
+      "totalExecutionTimeMin": 20.00
+    }
+  ]
+}
+~~~
+
 -----
 
 <a name="Licence"></a>
@@ -179,6 +242,11 @@ If you have any questions and commissions for me, feel free to contact me.
 * v1.0.0 (February 9, 2019)
 
     1. Initial release.
+
+* v1.0.1 (February 10, 2019)
+
+    1. New method of [getExecutionTimeOfProcessType()](#getexecutiontimeofprocesstype) was added.
+        - This method retrieves the total execution time of all functions by filtering the process type. For example, the total execution time of Web Apps can be retrieved.
 
 
 [TOP](#top)
